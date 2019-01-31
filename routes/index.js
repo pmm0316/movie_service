@@ -1,14 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose')
+const recommend = require('../models/recommend')
+const Response = require('../common/response')
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
-});
-
-router.get('/test', function(req, res, next) {
-  res.json({name: 'test data.....'})
 });
 
 router.get('/mongooseTest', function (req, res, next) {
@@ -26,6 +25,37 @@ router.get('/mongooseTest', function (req, res, next) {
     }
   })
   res.send('数据库连接测试')
+})
+
+// 显示主页的推荐大图等
+router.get('/showIndex', function (req, res, next) {
+  console.log('showIndex')
+  recommend.findAll((err, getRecommend) => {
+    if (err) {
+      res.json(new Response('获取大图失败').hasError(err))
+    }
+    res.json(new Response('获取成功').hasData(getRecommend))
+  })
+})
+
+// 显示所有的排行榜，也就是对于电影字段index的样式
+router.get('/showRanking', function (req, res, next) {
+  
+})
+
+// 显示文章列表
+router.get('/showArticle', function (req, res, next) {
+  
+})
+
+// 显示文章内容
+router.post('/articleDetail', function (req, res, next) {
+  
+})
+
+// 显示用户个人信息的内容
+router.post('/showUser', function (req, res, next) {
+
 })
 
 module.exports = router;
