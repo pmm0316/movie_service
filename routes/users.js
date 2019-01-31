@@ -4,6 +4,7 @@ const router = express.Router();
 const user = require('../models/user')
 const comment = require('../models/comment')
 const movie = require('../models/movie')
+const mail = require('../models/mail')
 const Response = require('../common/response')
 
 // 登录
@@ -216,7 +217,44 @@ router.post('/download', (req, res, next) => {
 })
 // 用户发送站内信
 router.post('/sendEmail', (req, res, next) => {
-
+  let params = req.body
+  if (!params.token) {
+    res.json(new Response('用户登录状态错误').hasError())
+  }
+  if (!params.user_id) {
+    res.json(new Response('用户登录状态出错').hasError())
+  }
+  if (!params.toUserName) {
+    res.json(new Response('未选择相关的用户').hasError())
+  }
+  if (!params.title) {
+    res.json(new Response('标题不能为空').hasError())
+  }
+  if (!params.context) {
+    res.json(new Response('内容不能为空').hasError())
+  }
+  if (params.token === getMD5Password(params.user_id)) {
+    user.findByUsername(params.toUserName, (err, toUser) => {
+      if (toUser.length !== 0) {
+        let newEmail = new mail({
+          fromUser: params.user_id,
+          toUser: toUser[0]._id,
+          title: params.title,
+          context: params.context
+        })
+        newEmail.save((err) => {
+          if (!err) {
+            res.json(new Response('发送成功'))
+          }
+          res.json(new Response('发送失败').hasError(err))
+        })
+      } else {
+        res.json(new Response('您发送的对象不存在').hasError(err))
+      }
+    })
+  } else {
+    res.json(new Response('用户登录错误').hasError())
+  }
 })
 // 用户显示站内信，其中receive参数值是1时是发送的内容，值为2时是收到的内容
 router.post('/showEmail', (req, res, next) => {
