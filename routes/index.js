@@ -62,6 +62,16 @@ router.get('/showArticle', function (req, res, next) {
 
 // 显示文章内容
 router.post('/articleDetail', function (req, res, next) {
+  let params = req.body
+  if (!params.article_id) {
+    res.json(new Response('文章id出错').hasError())
+  }
+  article.findByArticleId(params.article_id, (err, getArticle) => {
+    if (err) {
+      res.json(new Response('获取文章详情失败').hasError(err))
+    }
+    res.json(new Response('获取文章详情成功').hasData(getArticle))
+  })
 })
 
 // 显示用户个人信息的内容
