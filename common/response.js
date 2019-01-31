@@ -19,7 +19,7 @@ class Response {
     return {
       status: this.status,
       message: this.message || 'success',
-      data
+      data: data
     }
   }
 }

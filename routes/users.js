@@ -258,7 +258,45 @@ router.post('/sendEmail', (req, res, next) => {
 })
 // 用户显示站内信，其中receive参数值是1时是发送的内容，值为2时是收到的内容
 router.post('/showEmail', (req, res, next) => {
-
+  let params = req.body
+  if (!params.token) {
+    res.json(new Response('用户登录状态错误').hasError())
+  }
+  if (!params.user_id) {
+    res.json(new Response('用户id出错').hasError())
+  }
+  if (!params.receive) {
+    res.json(new Response('参数出错').hasError())
+  }
+  if (params.token === getMD5Password(params.user_id)) {
+    if (Number(params.receive) === 1) {
+      // 发送的站内信
+      mail.findByFromUserId(params.user_id, (err, sendMail) => {
+        if (err) {
+          res.json(new Response('获取发送的站内信失败').hasError(err))
+        }
+        if (sendMail) {
+          res.json(new Response('获取成功').hasData(sendMail))
+        } else {
+          res.json(new Response('获取站内信为空').hasError())
+        }
+      })
+    } else {
+      // 收到的站内信
+      mail.findByToUserId(params.user_id, (err, receiveMail) => {
+        if (err) {
+          res.json(new Response('获取收到的站内信失败').hasError(err))
+        }
+        if (receiveMail) {
+          res.json(new Response('获取成功').hasData(receiveMail))
+        } else {
+          res.json(new Response('获取站内信为空').hasError())
+        }
+      })
+    }
+  } else {
+    res.json(new Response('用户登录错误').hasError())
+  }
 })
 
 const init_token = 'TKL02o'
