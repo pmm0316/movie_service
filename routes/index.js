@@ -4,6 +4,7 @@ var mongoose = require('mongoose')
 const recommend = require('../models/recommend')
 const movie = require('../models/movie')
 const article = require('../models/article')
+const user = require('../models/user')
 const Response = require('../common/response')
 
 
@@ -76,7 +77,22 @@ router.post('/articleDetail', function (req, res, next) {
 
 // 显示用户个人信息的内容
 router.post('/showUser', function (req, res, next) {
-
+  let params = req.body
+  if (!params.user_id) {
+    res.json(new Response('用户状态出错').hasError())
+  }
+  user.findById(params.user_id, (err, getUser) => {
+    if (err) {
+      res.json(new Response('查询用户失败').hasError(err))
+    }
+    res.json(new Response('查询用户成功').hasData({
+      user_id: getUser._id,
+      username: getUser.username,
+      userMail: getUser.userMail,
+      userPhone: getUser.userPhone,
+      userStop: getUser.userStop
+    }))
+  })
 })
 
 module.exports = router;
