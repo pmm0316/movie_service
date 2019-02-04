@@ -134,10 +134,7 @@ router.post('/findPassword', (req, res, next) => {
             res.json(new Response('用户老密码错误').hasError())
           } else {
             // 更新用户密码
-            user.update({
-              _id: params.user_id,
-              password: params.repassword
-            }, (err, userUpdate) => {
+            user.update({_id: params.user_id}, {password: params.repassword}, (err, userUpdate) => {
               if (err) {
                 res.json(new Response('更改错误').hasError(err))
               } else {
@@ -152,11 +149,16 @@ router.post('/findPassword', (req, res, next) => {
     } else {
       // 非登录状态，修改密码
       user.findUserPassword(params.username, params.userMail, params.userPhone, (err, userFound) => {
+        console.log(userFound)
+        console.log(params)
         if (userFound.length !== 0) {
           user.update({
-            _id: userFound[0]._id,
+            _id: userFound[0]._id}, {
             password: params.repassword
           }, (err, userUpdate) => {
+            console.log(1)
+            console.log(err)
+            console.log(userUpdate)
             if (err) {
               res.json(new Response('更改错误').hasError(err))
             } else {
