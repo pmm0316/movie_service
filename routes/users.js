@@ -301,6 +301,21 @@ router.post('/showEmail', (req, res, next) => {
   }
 })
 
+router.post('/showUser', (req, res, next) => {
+  let user_id = req.body.user_id
+  if (user_id) {
+    user.findById(user_id, (err, user) => {
+      if (err) {
+        res.json(new Response('查询用户失败').hasError(err))
+      } else {
+        res.json(new Response('获取用户详情成功').hasData(user))
+      }
+    })
+  } else {
+    res.json(new Response('用户id不合法').hasError())
+  }
+})
+
 const init_token = 'TKL02o'
 function getMD5Password (id) {
   let md5 = crypto.createHash('md5')
